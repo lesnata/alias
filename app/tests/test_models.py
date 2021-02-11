@@ -13,11 +13,6 @@ class TestModels(TestCase):
         self.object1.delete()
         self.alias1.delete()
 
-    # Doesn't work with SQLite db. Uncomment with Postgres
-    # def test_object_length(self):
-    #     with self.assertRaises(ValidationError):
-    #         Object.objects.create(name="types-slug-023xf-types-slug-023xf-types-slug-023xf")
-
     def test_alias_object(self):
         self.assertEqual(self.alias1.target, self.object1)
 

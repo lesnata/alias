@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from app.views import referred_obj_slug, get_aliases, replace_alias
 from app.models import Object, Alias
@@ -29,15 +29,17 @@ class TestViews(TestCase):
 
     def test_get_aliases_type_error(self):
         with self.assertRaises(TypeError):
-            get_aliases(56, "10.02.2021 01:00", "11.02.2021 02:00")
+            get_aliases(self.alias1.target, "10.02.2021 01:00",
+                        "11.02.2021 02:00")
 
     def test_get_aliases_target_exist_error(self):
-        with self.assertRaises(ObjectDoesNotExist):
+        with self.assertRaises(Object.DoesNotExist):
             get_aliases(56, self.alias1.start, self.alias1.start)
 
     def test_get_aliases_alias_exist_error(self):
+        object2 = Object.objects.create(name="types-slug-02555")
         with self.assertRaises(ValidationError):
-            get_aliases(56, self.alias1.start, self.alias1.start)
+            get_aliases(object2.name, self.alias1.start, self.alias1.start)
 
     def test_get_aliases_alias_not_active(self):
         with self.assertRaises(ValidationError):

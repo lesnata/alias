@@ -20,16 +20,23 @@ class Alias(models.Model):
     start = models.DateTimeField(auto_now=True)
     end = models.DateTimeField(null=True)
 
-    """
-    Overwriting save() method with duplicated alias check.
-    If instance with the same alias name, target object is running (end=Null),
-    function will raise ValidationError. Otherwise, save object.
-    """
-
     def __str__(self):
         return self.alias
 
     def save(self, *args, **kwargs):
+        """ Overwriting save() method with duplicated alias check.
+                If instance with the same ``alias`` and ``target``
+                value is running (end=Null), function will raise
+                ValidationError. Otherwise, save object.
+
+            Args:
+                *args: Variable length argument list.
+                **kwargs: Arbitrary keyword arguments.
+
+             Raises:
+                ValidationError: when instance with same
+                ``alias``,``target`` & ``end=None`` exists
+        """
         duplicated_alias = Alias.objects.filter(
             Q(alias=self.alias), Q(target=self.target), Q(end__isnull=True)
         )
@@ -38,12 +45,14 @@ class Alias(models.Model):
         else:
             super(Alias, self).save(*args, **kwargs)
 
-    """
-    to_end_alias() function updates Alias object with current datetime,
-    the last microsecond is non-inclusive
-    """
-
     def to_end_alias(self, *args, **kwargs):
+        """ to_end_alias() - sets ``end`` of instance to current time
+                with the last microsecond exclusively
+            Args:
+                *args: Variable length argument list.
+                **kwargs: Arbitrary keyword arguments.
+        """
+
         end = datetime.now() - timedelta(microseconds=1)
         self.end = end
         super(Alias, self).save(*args, **kwargs)
