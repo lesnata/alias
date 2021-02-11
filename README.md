@@ -2,17 +2,18 @@
 * [General info](#general-info)
 * [Functionality](#functionality)
 * [Technologies](#technologies)
+* [Style conventions](#style-conventions)
 * [Setup](#setup)
-* [Inside](#inside)
+* [Running in shell](#running-in-shell)
 * [Tests](#tests)
 
 ## General info
 The app introduces an "Alias" object/model, defined as such:
-- "alias" field - string (no specific requirements);
-- "target" field - string (a "soft foreign key" to slugs of other models/apps 
+- ``alias`` field - string (no specific requirements);
+- ``target`` field - string (a "soft foreign key" to slugs of other models/apps 
     of the existing project; no more than 24 characters);
-- "start" field - microsecond precision timestamp/datetime;
-- "end" field - microsecond precision timestamp/datetime or None.
+- ``start`` field - microsecond precision timestamp/datetime;
+- ``end`` field - microsecond precision timestamp/datetime or None.
 
 
 ## Functionality
@@ -33,6 +34,11 @@ Project is created with:
 * psycopg2-binary==2.8.6
 
 
+## Style conventions
+For code conventions used Black and Flake8 library. 
+All functions and model methods have explicit doc strings explanations.
+
+
 ## Setup
 To run this project locally, make the following:
 
@@ -45,10 +51,10 @@ $ (venv_alias)$ pip install -r requirements.txt
 $ (venv_alias)$ python manage.py runserver
 ```
 
-## Inside
+## Running in shell
 To enter inside SQLite DB:
 ```
-$ python manage.py test
+$ python manage.py shell
 >>> from app.models import Alias, Object;
 >>> from app.views import get_aliases, referred_obj_slug, replace_alias;
 >>> from datetime import datetime;
@@ -68,8 +74,10 @@ $ python manage.py test
 
 
 ## Tests
-Tests are separated into distinct folder /tests for models nd views. 
-Unit test coverage is 100%. Checked with 'Coverage.py' lib:
+* Tests are separated into distinct folder /tests/ with models and views tests. 
+* Unit test coverage is 100%. 
+* Checked with 'Coverage.py' lib:
+
 ```
 Name                                        Stmts   Miss  Cover
 ---------------------------------------------------------------
