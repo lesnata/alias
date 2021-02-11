@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 
 class Object(models.Model):
-    name = models.CharField(null=False, max_length=24)
+    name = models.CharField(null=False, max_length=24, unique=True)
 
     def __str__(self):
         return self.name

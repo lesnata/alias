@@ -1,47 +1,67 @@
 import datetime
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from .models import Alias
-
-# Create your views here.
-
-
-"""
-referred_obj_slug function - gets list of slugs for particular alias
-alias_obj = Alias.objects.filter(alias='useful-object', end=None)
-referred_obj_slug = alias_obj.target
-aliases = get_aliases(target='types-slug-023xf', from=<datetime 2020-02-01
-00:00:00.000000>, to=<datetime 2020-05-01 05:23:47.657264)
-
-"""
+from .models import Alias, Object
 
 
 def referred_obj_slug(alias, end=None):
+    """ referred_obj_slug function - gets list of slugs for particular alias.
+        Limitation on particular end period is optional.
+
+    Args:
+        alias (`str`): The first parameter.
+        end (:obj:`DateTime`, optional): The second parameter. Defaults to None.
+
+    Returns:
+        list: List with slugs.
+        Example: ['types-slug-023xf', 'types-slug-025xf']
+
+    Raises:
+        ValidationError: when alias object is not found
+
+    Example:
+        alias_obj = Alias.objects.filter(alias='useful-object', end=None)
+    """
+
     alias_obj = Alias.objects.filter(alias=alias)
     if alias_obj:
-        # return slug of currently running Alias objects
         if end is not None:
-            # alias_obj = Alias.objects.filter(alias=alias, end__lte=end)
+            # returns slug of currently running Alias objects
             return [i.target.name for i in alias_obj.filter(end__lte=end)]
-
-        # return slug of all finished Alias objects active before [end]
         else:
+            # returns slug of all finished Alias objects active before [end]
             return [i.target.name for i in alias_obj.filter(end__isnull=True)]
-    return "Alias is not found"
-
-
-"""
-get_aliases functions - gets aliases which were running at the specific time.
-Aliases may start before from_time or end after to_time.
-Here we only care about aliases with overlapping running time.
-Even one microsecond of overlap counts as running alias at that time
-"""
+    raise ValidationError("Alias is not found")
 
 
 def get_aliases(target, from_time, to_time):
+    """ get_aliases functions - gets aliases which were running at the specific time.
+            Aliases may start before from_time or end after to_time.
+            Here we only care about aliases with overlapping running time.
+            Even one microsecond of overlap counts as running alias.
+
+    Args:
+        target (`str`): The first parameter.
+        from_time (:obj:`DateTime`): The second parameter. Required.
+        to_time (:obj:`DateTime`): The third parameter. Required.
+
+    Returns:
+        list: List with aliases running at specific time.
+        Example: ['useful-object', 'useful-object2']
+
+    Raises:
+        ValidationError: when target object is not found,
+        ValidationError: when alias object is not found,
+
+    Example:
+        get_aliases(target='types-slug-023xf', from=<datetime 2020-02-01
+        00:00:00.000000>, to=<datetime 2020-05-01 05:23:47.657264)
+
+    """
     if (type(from_time) is datetime.datetime) \
             and (type(to_time) is datetime.datetime):
-        alias_unfiltered = Alias.objects.filter(target=target)
+        target_obj = Object.objects.get(name=target)
+        alias_unfiltered = Alias.objects.filter(target=target_obj)
         if alias_unfiltered.exists():
             if (
                 Alias.objects.filter(Q(target=target),
@@ -53,13 +73,12 @@ def get_aliases(target, from_time, to_time):
             ):
                 alias_list = [i.alias for i in alias_unfiltered]
                 return f"Targeted aliases are: {alias_list}"
-            raise ValidationError(
-                f"No aliases with {target} target were active at that time"
-            )
+            raise ValidationError(f"No aliases with {target} target"
+                                  f" were active at that time")
         raise ValidationError(f"Alias objects with {target} don't exist")
 
-    raise TypeError(f"from_time ({from_time}) or to_time ({to_time}) "
-                    f"parameters are not in DateTime format")
+    raise TypeError(f"from_time ({from_time}) or to_time ({to_time})"
+                    f" parameters are not in DateTime format")
 
 
 """
