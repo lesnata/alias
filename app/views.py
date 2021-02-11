@@ -45,15 +45,60 @@ def get_aliases(target, from_time, to_time):
     raise TypeError("from_time or to_time parameters are not in DateTime format")
 
 
-
-'''
-replacing an existing alias with a new one at a specific time point.
+''' 
+Replacing an existing alias with a new one at a specific time point.
 That is, something like:
 alias_replace(existing_alias, replace_at, new_alias_value)​ 
 that, when called, will set ​end​ for the ​existing_alias​ to ​replace_at​ moment, 
 create a new Alias with alias=new_alias_value​ and ​start=replace_at, end=None​.
-
 '''
+
+
+def replace_alias(existing_alias_id, replace_at, new_alias_value):
+    if type(replace_at) is datetime.datetime:
+        alias = Alias.objects.get(id=existing_alias_id)
+        if alias.start.replace(tzinfo=None) >= replace_at:
+            print(f'Replacement of {alias.id} with {alias.start} is impossible: start time is greater than replace_at')
+        else:
+            # Updating existing Alias
+            Alias.objects.filter(pk=alias.pk).update(end=replace_at)
+            alias.refresh_from_db()
+            print(f'Alias object updated: {alias.__dict__}')
+
+            # Creating new Alias
+            new_alias = Alias.objects.create(alias=new_alias_value, target=alias.target, start=replace_at)
+            print(new_alias.__dict__)
+        return f'Done - new alias id is {new_alias.id}'
+
+
+# def replace_alias_in_bulk(existing_alias, replace_at, new_alias_value):
+#     if type(replace_at)is datetime.datetime:
+#         aliases_array = Alias.objects.filter(alias=existing_alias)
+#         print(aliases_array)
+#         for i in aliases_array:
+#             if i.start >= replace_at:
+#                 print(f'Replacement of {i.id} with {i.start} is impossible: start time is greater than replace_at')
+#             else:
+#                 print(f'Alias object not updated: {i.__dict__}')
+#                 Alias.objects.filter(pk=i.pk).update(end=replace_at)
+#                 i.refresh_from_db()
+#                 print(f'Alias object updated: {i.__dict__}')
+#
+#             new_alias = Alias.objects.create(alias=new_alias_value, target=i.target, start=replace_at)
+#             print(new_alias.__dict__)
+#         return aliases_array
+#
+#     # i.to_update_alias(end=replace_at)
+
+
+
+
+
+
+
+
+
+
 
     # return Alias.objects.filter(Q(target=target), Q(start__lte=to_time))
 

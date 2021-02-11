@@ -38,3 +38,9 @@ class Alias(models.Model):
         self.end = end
         super(Alias, self).save(*args, **kwargs)
         return self.end
+
+    def to_update_alias(self, id, end, *args, **kwargs):
+        self.end = end
+        self.id = id
+        super(Alias, self).save(id=self.id)
+        return Alias
