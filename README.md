@@ -71,7 +71,11 @@ $ python manage.py shell
 >>> replace_at = datetime.now();
 >>> replace_alias(4, replace_at, 'Lumous');
 ```
-
+Or you may enter as a user via admin panel:
+```
+default-user
+Berlin-tomato-2
+```
 
 ## Tests
 * Tests are separated into distinct folder /tests/ with models and views tests. 
