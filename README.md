@@ -31,7 +31,6 @@ Project is created with:
 * black==20.8b1
 * flake8==3.8.4
 * coverage==5.4
-* psycopg2-binary==2.8.6
 
 
 ## Style conventions
