@@ -52,7 +52,7 @@ $ (venv_alias)$ python manage.py runserver
 ```
 
 ## Running in shell
-To enter inside SQLite DB:
+To enter inside SQLite DB and check functionality please run:
 ```
 $ python manage.py shell
 >>> from app.models import Alias, Object;
